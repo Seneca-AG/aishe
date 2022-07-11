@@ -101,6 +101,13 @@ def matching(filename, productInfo, matchingPositionLength, product):
             valueLR.append(row[index+4].strip() + ',' + row[index+5].strip())
     arr = np.array(valueLR)
     currentVal = valueLR[-1]
+    currentVal = '499510505,521570537'
+    # if(product=='EURCHF'):
+    #     currentVal = '480430479,487450489'
+    # elif(product=='USDCHF'):
+    #     currentVal = '486430487,494490499'
+    # elif (product == 'EURGBP'):
+    #     currentVal = '499530505,501570509'
     x = np.where(arr == currentVal)
     datalength = len(rows)
     result = []
@@ -192,7 +199,6 @@ if(download_status):
                     writer = csv.writer(f, delimiter =";", quoting=csv.QUOTE_MINIMAL)
                     for result in results:
                         csvwrite(writer, result)
-
             else:
                 with open(resultfile, 'a', encoding='UTF8', newline='') as f:
                     writer = csv.writer(f, delimiter =";", quoting=csv.QUOTE_MINIMAL)
@@ -201,14 +207,14 @@ if(download_status):
                         if key not in resultdata:
                             csvwrite(writer, result)
 
-    if (exists(resultfile)):
-        scope = ["https://spreadsheets.google.com/feeds", 'https://www.googleapis.com/auth/spreadsheets',
-                 "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
-        credentials = ServiceAccountCredentials.from_json_keyfile_name(SERVICE_ACCOUNT_FILE, scope)
-        gc = gspread.authorize(credentials)
-        # # Read CSV file contents
-        content = open(resultfile, 'r').read()
-        gc.import_csv('196QyQuGmkYkUPKzp4xV3PDcveTEVjXsST0oXkajSRdY', content)
+    # if (exists(resultfile)):
+    #     scope = ["https://spreadsheets.google.com/feeds", 'https://www.googleapis.com/auth/spreadsheets',
+    #              "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
+    #     credentials = ServiceAccountCredentials.from_json_keyfile_name(SERVICE_ACCOUNT_FILE, scope)
+    #     gc = gspread.authorize(credentials)
+    #     # # Read CSV file contents
+    #     content = open(resultfile, 'r').read()
+    #     gc.import_csv('196QyQuGmkYkUPKzp4xV3PDcveTEVjXsST0oXkajSRdY', content)
 else:
     print("Download failed: status code")
 files = os.listdir(destdir)
