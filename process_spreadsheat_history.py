@@ -8,6 +8,7 @@ import xlrd
 from dotenv import load_dotenv
 import datetime as dt
 
+
 # import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 #from google.oauth2 import service_account
@@ -72,12 +73,14 @@ def csvwrite(writer, results):
         # writer.writerow(data)
 
 def getCurrentVal(filename, productInfo):
+    print((filename))
     with open(filename, 'r') as file:
         lastRow = file.readlines()[-1].split(";")
     currentVal = {'time':lastRow[1]}
     for info in productInfo:
         index = productInfo[info][0]
         currentVal[info] = lastRow[index+4] + ',' + lastRow[index+5]
+    file.close()
     return {'download_status': True, 'currentVal': currentVal}
 
 def getCurrentValFromCloud(fileInfo, destdir, filename, productInfo):
@@ -111,12 +114,6 @@ def matching(filename, productInfo, matchingPositionLength, product, currentVal,
     date_time_obj = dt.datetime.strptime(currentTime, '%d.%m.%Y %H:%M')
     new_time = date_time_obj + time_change
     max_time = new_time.strftime("%d.%m.%Y %H:%M")
-    # if (max_time < '19.07.2022 13:03:35'):
-    #     print('ccccccc')
-    # else:
-    #     print('ddddddddd')
-    # exit()
-    # exit()
     with open(filename, 'r') as file:
         csvreader = csv.reader(file, delimiter=";")
         header = next(csvreader)
@@ -178,7 +175,7 @@ def matching(filename, productInfo, matchingPositionLength, product, currentVal,
             dt1 = datetime.strptime(start, time_format)
             dt2 = datetime.strptime(end, time_format)
             diff = ((dt2 - dt1) // timedelta(minutes=1))  # minutes
-            if (diff > 0 and diff<=duration):
+            if ((start <= max_time)):
                 print('Product=',  product, ', CurrentValue=', currentVal, ',Start=', start, ', Duration=', diff, ', Event=', event, ', Value=', int(value))
                 result.append([product, start, diff, event, int(value)])
         return result
@@ -198,6 +195,8 @@ databaseInfo = {'Sunday': '', 'Monday': 'Monday.csv', 'Tuesday': 'Tuesday.csv', 
 # Identify the date
 load_dotenv()
 CLOUD_FILE_PATH = os.getenv('CLOUD_FILE_PATH')
+print(CLOUD_FILE_PATH)
+exit()
 curr_date = datetime.today()
 curr_day = curr_date.strftime('%A')
 week = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -210,8 +209,9 @@ destdir = 'csv/'
 matchingPositionLength = 10
 resultfilename = sheetname + '_results.csv'
 resultfile = destdir + resultfilename;
-#result = getCurrentVal(CLOUD_FILE_PATH+filename, productInfo)
-result = getCurrentValFromCloud(fileInfo[curr_day], destdir, filename, productInfo)
+result = getCurrentVal(CLOUD_FILE_PATH+filename, productInfo)
+print(result)
+# result = getCurrentValFromCloud(fileInfo[curr_day], destdir, filename, productInfo)
 currentVal = result['currentVal']
 download_status = result['download_status']
 duration = int(os.getenv('DURATION'))
