@@ -4,8 +4,12 @@ import numpy as np
 from datetime import datetime, timedelta
 import csv
 from os.path import exists
+import xlrd
+from dotenv import load_dotenv
+import datetime as dt
 
-import gspread
+
+# import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 #from google.oauth2 import service_account
 SERVICE_ACCOUNT_FILE = 'keys.json'
@@ -68,46 +72,72 @@ def csvwrite(writer, results):
         # data = [result['Product'], result['Start'], result['Duration'], result['Event'], result['Value']]
         # writer.writerow(data)
 
-def matching(filename, productInfo, matchingPositionLength, product):
+def getCurrentVal(filename, productInfo):
+    print((filename))
+    with open(filename, 'r') as file:
+        lastRow = file.readlines()[-1].split(";")
+    currentVal = {'time':lastRow[1]}
+    for info in productInfo:
+        index = productInfo[info][0]
+        currentVal[info] = lastRow[index+4] + ',' + lastRow[index+5]
+    file.close()
+    return {'download_status': True, 'currentVal': currentVal}
+
+def getCurrentValFromCloud(fileInfo, destdir, filename, productInfo):
+    url = 'https://docs.google.com/uc?export=download&id=' + fileInfo
+    download_status = download(url, destdir, filename)
+    if(download_status):
+        filename = destdir+filename
+        with open(filename, 'r') as file:
+            lastRow = file.readlines()[-1].split(";")
+        currentVal = {'time':lastRow[1]}
+        for info in productInfo:
+            index = productInfo[info][0]
+            currentVal[info] = lastRow[index+4] + ',' + lastRow[index+5]
+        return {'download_status': download_status, 'currentVal': currentVal}
+    else:
+        return {'download_status': False}
+
+def matching(filename, productInfo, matchingPositionLength, product, currentVal, duration):
     rows = []
+    time = []
     time = []
     low = []
     bid = []
     ask = []
     high = []
-    valueL = []
-    valueR = []
     valueLR = []
+
+    # currentVal = result['currentVal']
+    currentTime = currentVal['time']
+    time_change = dt.timedelta(minutes=duration)
+    date_time_obj = dt.datetime.strptime(currentTime, '%d.%m.%Y %H:%M')
+    new_time = date_time_obj + time_change
+    max_time = new_time.strftime("%d.%m.%Y %H:%M")
     with open(filename, 'r') as file:
         csvreader = csv.reader(file, delimiter=";")
         header = next(csvreader)
         for row in csvreader:
-            #row = value
-            rows.append(row)
-            index = productInfo[0];
-            time.append(row[1].strip())
-            low.append(row[index].strip())
-            #bid.append(row[index+1].strip())
-            value = row[index + 1].replace(",", "")
-            value = value.replace(".", "")
-            bid.append(value)
-            #ask.append(row[index + 2].strip())
-            value = row[index + 2].replace(",", "")
-            value = value.replace(".", "")
-            ask.append(value)
-            high.append(row[index+3].strip())
-            valueL.append(row[index+4].strip())
-            valueR.append(row[index+5].strip())
-            valueLR.append(row[index+4].strip() + ',' + row[index+5].strip())
+            if(row[1] != ''):
+                row[1] = row[1].replace(",", ".")
+                row[1] = xlrd.xldate_as_datetime(float(row[1]), 0).strftime('%d.%m.%Y %H:%M:%S')
+                row[0] = row[1].replace(row[1][0:10], currentVal['time'][0:10])
+                if ((currentVal['time'] <= row[0])):
+                    rows.append(row)
+                    index = productInfo[0];
+                    time.append(row[1])
+                    low.append(row[index].strip())
+                    value = row[index + 1].replace(",", "")
+                    value = value.replace(".", "")
+                    bid.append(value)
+                    value = row[index + 2].replace(",", "")
+                    value = value.replace(".", "")
+                    ask.append(value)
+                    high.append(row[index+3].strip())
+                    valueLR.append(row[index+4].strip() + ',' + row[index+5].strip())
     arr = np.array(valueLR)
-    currentVal = valueLR[-1]
-    currentVal = '499510505,521570537'
-    # if(product=='EURCHF'):
-    #     currentVal = '480430479,487450489'
-    # elif(product=='USDCHF'):
-    #     currentVal = '486430487,494490499'
-    # elif (product == 'EURGBP'):
-    #     currentVal = '499530505,501570509'
+    currentVal = currentVal[product]
+    currentVal = '530570549,481450481'
     x = np.where(arr == currentVal)
     datalength = len(rows)
     result = []
@@ -132,23 +162,22 @@ def matching(filename, productInfo, matchingPositionLength, product):
             bidMaxPosition = StartMatchPoint + bidResult[3]
             askMinPosition = StartMatchPoint + askResult[2]
             askMaxPosition = StartMatchPoint + askResult[3]
-            start = time[StartMatchPoint]
+            start = rows[StartMatchPoint][0]
             if(dataCount <= bidCount):
                 event = 'SELL'
-                end = time[bidMinPosition]
+                end = rows[bidMinPosition][0]
                 value = round(float(bidResult[1]) - float(bidResult[0]), productInfo[2])
             else:
                 event = 'BUY'
-                end = time[askMaxPosition]
+                end = rows[askMaxPosition][0]
                 value = round(float(askResult[1]) - float(askResult[0]), productInfo[2])
             value = value
             time_format = "%d.%m.%Y %H:%M:%S"
             dt1 = datetime.strptime(start, time_format)
             dt2 = datetime.strptime(end, time_format)
             diff = ((dt2 - dt1) // timedelta(minutes=1))  # minutes
-            print('Product=',  product, ', CurrentValue=', currentVal, ',Start=', start, ', Duration=', diff, ', Event=', event, ', Value=', int(value))
-            if(diff > 0):
-                #result.append({'Product': product, 'Start': start, 'Duration': diff, 'Event': event, 'Value': int(value)})
+            if ((start <= max_time)):
+                print('Product=',  product, ', CurrentValue=', currentVal, ',Start=', start, ', Duration=', diff, ', Event=', event, ', Value=', int(value))
                 result.append([product, start, diff, event, int(value)])
         return result
     else:
@@ -161,7 +190,12 @@ fileInfo = {'Sunday': '1e8jhfnN8vxWjkuo71xzh-1Z8Tic5rodr', 'Monday': '1rVqzlJ2u6
             'Tuesday': '1HOn_9lJD0D_uXzdQ79T_plF7KCA4rNYF', 'Wednesday': '1QaXf7L1xy-jgr50tJ09MbvyVWVbXGUdK',
             'Thursday': '1WPGLOp9cH8yrJ9lz6ymi9L7C5s9SyXUY', 'Friday': '1FLtVOfwkJJmXIzzq6KfsKEZ7UKC0Oili',
             'Saturday': '1jgOS3a4wvIYKeDOLjTLd9BfYqGA6dekO' }
+
+databaseInfo = {'Sunday': '', 'Monday': 'Monday.csv', 'Tuesday': 'Tuesday.csv', 'Wednesday': 'Wednesday.csv',
+                'Thursday': 'Thursday.csv', 'Friday': 'Friday.csv', 'Saturday': '' }
 # Identify the date
+load_dotenv()
+CLOUD_FILE_PATH = os.getenv('CLOUD_FILE_PATH')
 curr_date = datetime.today()
 curr_day = curr_date.strftime('%A')
 week = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -169,43 +203,53 @@ dayofweek = week.index(curr_day)
 week_day = dayofweek + 1
 sheetname = '.'.join([str(week_day), curr_day])
 filename = sheetname + '.csv'
+database_filename = 'history/'+curr_day+'.csv'
 destdir = 'csv/'
 matchingPositionLength = 10
 resultfilename = sheetname + '_results.csv'
 resultfile = destdir + resultfilename;
-url = 'https://docs.google.com/uc?export=download&id='+fileInfo[curr_day]
-download_status = download(url, destdir, filename)
+result = getCurrentVal(CLOUD_FILE_PATH+filename, productInfo)
+# result = getCurrentValFromCloud(fileInfo[curr_day], destdir, filename, productInfo)
+currentVal = result['currentVal']
+download_status = result['download_status']
+duration = int(os.getenv('DURATION'))
 if(download_status):
     filename = destdir+filename
     resultdata = {}
-    if ( exists(resultfile)):
-        with open(resultfile, 'r') as file:
-            csvreader = csv.reader(file, delimiter=";")
-            header = next(csvreader)
-            for row in csvreader:
-                key = row[0]+row[1]
-                resultdata[key] = row
-    else:
-        with open(resultfile, 'w', encoding='UTF8', newline='') as f:
-            header = ['Product', 'Start', 'Duration', 'Event', 'Value']
-            writer = csv.writer(f, delimiter =";", quoting=csv.QUOTE_MINIMAL)
-            writer.writerow(header)
+    # if ( exists(resultfile)):
+    #     with open(resultfile, 'r') as file:
+    #         csvreader = csv.reader(file, delimiter=";")
+    #         header = next(csvreader)
+    #         for row in csvreader:
+    #             key = row[0]+row[1]
+    #             resultdata[key] = row
+    # else:
+    #     with open(resultfile, 'w', encoding='UTF8', newline='') as f:
+    #         header = ['Product', 'Start', 'Duration', 'Event', 'Value']
+    #         writer = csv.writer(f, delimiter =";", quoting=csv.QUOTE_MINIMAL)
+    #         writer.writerow(header)
     for info in productInfo:
         product = info
-        results = matching(filename, productInfo[product], matchingPositionLength, product)
+        results = matching(database_filename, productInfo[product], matchingPositionLength, product, currentVal, duration)
         if(results):
-            if(not exists(resultfile)):
-                with open(resultfile, 'w', encoding='UTF8', newline='') as f:
-                    writer = csv.writer(f, delimiter =";", quoting=csv.QUOTE_MINIMAL)
-                    for result in results:
-                        csvwrite(writer, result)
-            else:
-                with open(resultfile, 'a', encoding='UTF8', newline='') as f:
-                    writer = csv.writer(f, delimiter =";", quoting=csv.QUOTE_MINIMAL)
-                    for result in results:
-                        key = result[0]+result[1]
-                        if key not in resultdata:
-                            csvwrite(writer, result)
+            with open(resultfile, 'w', encoding='UTF8', newline='') as f:
+                header = ['Product', 'Start', 'Duration', 'Event', 'Value']
+                writer = csv.writer(f, delimiter=";", quoting=csv.QUOTE_MINIMAL)
+                writer.writerow(header)
+                for result in results:
+                    csvwrite(writer, result)
+            # if(not exists(resultfile)):
+            #     with open(resultfile, 'w', encoding='UTF8', newline='') as f:
+            #         writer = csv.writer(f, delimiter =";", quoting=csv.QUOTE_MINIMAL)
+            #         for result in results:
+            #             csvwrite(writer, result)
+            # else:
+            #     with open(resultfile, 'a', encoding='UTF8', newline='') as f:
+            #         writer = csv.writer(f, delimiter =";", quoting=csv.QUOTE_MINIMAL)
+            #         for result in results:
+            #             key = result[0]+result[1]
+            #             if key not in resultdata:
+            #                 csvwrite(writer, result)
 
     # if (exists(resultfile)):
     #     scope = ["https://spreadsheets.google.com/feeds", 'https://www.googleapis.com/auth/spreadsheets',
@@ -217,9 +261,9 @@ if(download_status):
     #     gc.import_csv('196QyQuGmkYkUPKzp4xV3PDcveTEVjXsST0oXkajSRdY', content)
 else:
     print("Download failed: status code")
-files = os.listdir(destdir)
-for file in files:
-    if(resultfilename != file):
-        os.remove(os.path.join(destdir, file))
+# files = os.listdir(destdir)
+# for file in files:
+#     if(resultfilename != file):
+#         os.remove(os.path.join(destdir, file))
 
 #os.remove(resultfilename)
