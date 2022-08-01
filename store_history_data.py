@@ -2,11 +2,11 @@
 # my_connection = MyDatabase.connect_dbs()
 # exit()
 from datetime import datetime
-from lib.db import Crud
+from lib.db import Database
 import csv
 import xlrd
 
-db = Crud()
+db = Database()
 db.connect()
 productInfo = {'EURUSD': [2, 100000, 5], 'USDDKK': [9, 10000, 4], 'USDCHF': [16, 100000, 5], 'EURCAD': [23, 100000, 5], 'USDCAD': [30, 100000, 5], 'EURGBP': [37, 100000, 5], 'GBPUSD': [44, 100000, 5],
              'AUDUSD': [51, 100000, 5], 'EURCHF': [58, 100000, 5], 'AUDJPY': [65, 1, 1], 'XAUUSD': [72, 100, 2]}
@@ -16,15 +16,7 @@ database_filename = 'history/Tuesday.csv'
 database_filename = 'history/Wednesday.csv'
 database_filename = 'history/Thursday.csv'
 database_filename = 'history/Friday.csv'
-def matching(filename, productInfo, product, db):
-    rows = []
-    time = []
-    time = []
-    low = []
-    bid = []
-    ask = []
-    high = []
-    valueLR = []
+def storeResult(filename, productInfo, product, db):
     with open(filename, 'r') as file:
         csvreader = csv.reader(file, delimiter=";")
         header = next(csvreader)
@@ -53,9 +45,7 @@ for info in productInfo:
     tablename = info.lower()+'_thursday';
     tablename = info.lower()+'_friday';
     db.settable(tablename)
-    print(product)
-    results = matching(database_filename, productInfo[product], product, db)
-    print(tablename)
+    results = storeResult(database_filename, productInfo[product], product, db)
     # exit()
 exit();
 

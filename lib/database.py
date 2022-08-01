@@ -31,7 +31,7 @@ class Database:
             print(connection.get_dsn_parameters(), "\n")
             # Executing a SQL query
             cursor.execute("SELECT * FROM audjpy_friday")
-            record = cursor.fetchone()
+            record = cursor.fetchone()sql = "SELECT * FROM "+tablename+" WHERE CAST(time AS time) > TIME '" +currentTime+"'";
             print("You are connected to - ", record, "\n")
             # list_tables = cursor.fetchall()
             #

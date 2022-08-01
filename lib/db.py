@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 import os
 
 
-class Crud:
+class Database:
     # Initialize the Global variables
     def __init__(self):
         load_dotenv()
@@ -39,6 +39,8 @@ class Crud:
             self._cursor = cursor
             self._counter = 0
 
+    def get_connection(self):
+        return self
     # Validate the database connection
     def _check_connection(self):
         try:
