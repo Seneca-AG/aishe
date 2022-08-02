@@ -6,6 +6,7 @@ import csv
 from dotenv import load_dotenv
 import datetime as dt
 from lib.db import Database
+import xlrd
 
 def download(url: str, dest_folder: str, filename:str):
     if not os.path.exists(dest_folder):
@@ -54,34 +55,25 @@ def countOccurrences(arr, x):
 def csvwrite(writer, results):
     writer.writerow(results)
 
-def getCurrentVal(filename, productInfo):
-    with open(filename, 'r') as file:
-        lastRow = file.readlines()[-1].split(";")
-    currentVal = {'datetime':lastRow[1], 'time':lastRow[1].split(' ')[1]}
-    for info in productInfo:
-        index = productInfo[info][0]
-        currentVal[info] = lastRow[index+4] + ',' + lastRow[index+5]
-    file.close()
-    return {'download_status': True, 'currentVal': currentVal}
-
 def getCurrentValFromCloud(destdir, filename, productInfo):
-    url = os.getenv('CLOUD_FILE_PATH') + filename
+    url = os.getenv('CLOUD_FILE_PATH')
     download_status = download(url, destdir, filename)
     if(download_status):
         filename = destdir+filename
         with open(filename, 'r') as file:
             lastRow = file.readlines()[-1].split(";")
-        currentVal = {'datetime': lastRow[1], 'time': lastRow[1].split(' ')[1]}
-        for info in productInfo:
-            index = productInfo[info][0]
-            currentVal[info] = lastRow[index+4] + ',' + lastRow[index+5]
-        return {'download_status': download_status, 'currentVal': currentVal}
+            lastRow[1] = lastRow[1].replace(",", ".")
+            # lastRow[1] = xlrd.xldate_as_datetime(float(lastRow[1]), 0).strftime('%Y-%m-%d %H:%M:%S')
+            lastRow[1] = xlrd.xldate_as_datetime(float(lastRow[1]), 0).strftime('%d.%m.%Y %H:%M:%S')
+            currentVal = {'datetime': lastRow[1], 'time': lastRow[1].split(' ')[1]}
+            for info in productInfo:
+                index = productInfo[info][0]
+                currentVal[info] = lastRow[index+4] + ',' + lastRow[index+5]
+            return {'download_status': download_status, 'currentVal': currentVal}
     else:
         return {'download_status': False}
 
 def matching(db, tablename, productInfo, matchingPositionLength, product, currentVal, duration):
-    rows = []
-    time = []
     time = []
     low = []
     bid = []
@@ -91,9 +83,9 @@ def matching(db, tablename, productInfo, matchingPositionLength, product, curren
     currentTime = currentVal['time']
     dbconnection = db.get_connection()
     time_change = dt.timedelta(minutes=duration)
-    date_time_obj = dt.datetime.strptime(currentVal['datetime'], '%d.%m.%Y %H:%M')
+    date_time_obj = dt.datetime.strptime(currentVal['datetime'], '%d.%m.%Y %H:%M:%S')
     new_time = date_time_obj + time_change
-    max_time = new_time.strftime("%d.%m.%Y %H:%M")
+    max_time = new_time.strftime("%d.%m.%Y %H:%M:%S")
     sql = "SELECT id, to_char(time, 'dd.mm.yyyy HH24:MI:SS') as currenttime, low, bid, ask, high, valuel, valuer, result  FROM " + tablename + " WHERE CAST(time AS time) > TIME '" + currentTime + "'";
     dbconnection._cursor.execute(sql)
     results = dbconnection._cursor.fetchall()
@@ -110,6 +102,7 @@ def matching(db, tablename, productInfo, matchingPositionLength, product, curren
         valueLR.append(result[6].strip() + ',' + result[7].strip())
     arr = np.array(valueLR)
     currentVal = currentVal[product]
+    print(currentVal, product)
     x = np.where(arr == currentVal)
     datalength = len(time)
     result = []
@@ -161,19 +154,17 @@ productInfo = {'EURUSD': [2, 100000, 5], 'USDDKK': [9, 10000, 4], 'USDCHF': [16,
 
 # Identify the date
 load_dotenv()
-CLOUD_FILE_PATH = os.getenv('CLOUD_FILE_PATH')
 curr_date = datetime.today()
 curr_day = curr_date.strftime('%A')
 week = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 dayofweek = week.index(curr_day)
 week_day = dayofweek + 1
 sheetname = '.'.join([str(week_day), curr_day])
-filename = sheetname + '.csv'
+filename = 'actual.csv'
 destdir = 'csv/'
 matchingPositionLength = 10
 resultfilename = sheetname + '_results.csv'
 resultfile = destdir + resultfilename;
-#result = getCurrentVal(CLOUD_FILE_PATH+filename, productInfo)
 result = getCurrentValFromCloud(destdir, filename, productInfo)
 currentVal = result['currentVal']
 download_status = result['download_status']
