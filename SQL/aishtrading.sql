@@ -1162,3 +1162,69 @@ CREATE INDEX idx_xadusd_tuesday_time ON xauusd_tuesday(time);
 CREATE INDEX idx_xadusd_wednesday_time ON xauusd_wednesday(time);
 CREATE INDEX idx_xadusd_thursday_time ON xauusd_thursday(time);
 CREATE INDEX idx_xadusd_friday_time ON xauusd_friday(time);
+
+CREATE INDEX idx_audjpy_monday_valuel ON audjpy_monday(valuel,valuer);
+CREATE INDEX idx_audjpy_tuesday_valuel ON audjpy_tuesday(valuel,valuer);
+CREATE INDEX idx_audjpy_wednesday_valuel ON audjpy_wednesday(valuel,valuer);
+CREATE INDEX idx_audjpy_thursday_valuel ON audjpy_thursday(valuel,valuer);
+CREATE INDEX idx_audjpy_friday_valuel ON audjpy_friday(valuel,valuer);
+
+CREATE INDEX idx_audusd_monday_valuel ON audusd_monday(valuel,valuer);
+CREATE INDEX idx_audusd_tuesday_valuel ON audusd_tuesday(valuel,valuer);
+CREATE INDEX idx_audusd_wednesday_valuel ON audusd_wednesday(valuel,valuer);
+CREATE INDEX idx_audusd_thursday_valuel ON audusd_thursday(valuel,valuer);
+CREATE INDEX idx_audusd_friday_valuel ON audusd_friday(valuel,valuer);
+
+CREATE INDEX idx_eurcad_monday_valuel ON eurcad_monday(valuel,valuer);
+CREATE INDEX idx_eurcad_tuesday_valuel ON eurcad_tuesday(valuel,valuer);
+CREATE INDEX idx_eurcad_wednesday_valuel ON eurcad_wednesday(valuel,valuer);
+CREATE INDEX idx_eurcad_thursday_valuel ON eurcad_thursday(valuel,valuer);
+CREATE INDEX idx_eurcad_friday_valuel ON eurcad_friday(valuel,valuer);
+
+CREATE INDEX idx_eurchf_monday_valuel ON eurchf_monday(valuel,valuer);
+CREATE INDEX idx_eurchf_tuesday_valuel ON eurchf_tuesday(valuel,valuer);
+CREATE INDEX idx_eurchf_wednesday_valuel ON eurchf_wednesday(valuel,valuer);
+CREATE INDEX idx_eurchf_thursday_valuel ON eurchf_thursday(valuel,valuer);
+CREATE INDEX idx_eurchf_friday_valuel ON eurchf_friday(valuel,valuer);
+
+CREATE INDEX idx_eurgbp_monday_valuel ON eurgbp_monday(valuel,valuer);
+CREATE INDEX idx_eurgbp_tuesday_valuel ON eurgbp_tuesday(valuel,valuer);
+CREATE INDEX idx_eurgbp_wednesday_valuel ON eurgbp_wednesday(valuel,valuer);
+CREATE INDEX idx_eurgbp_thursday_valuel ON eurgbp_thursday(valuel,valuer);
+CREATE INDEX idx_eurgbp_friday_valuel ON eurgbp_friday(valuel,valuer);
+
+CREATE INDEX idx_eurusd_monday_valuel ON eurusd_monday(valuel,valuer);
+CREATE INDEX idx_eurusd_tuesday_valuel ON eurusd_tuesday(valuel,valuer);
+CREATE INDEX idx_eurusd_wednesday_valuel ON eurusd_wednesday(valuel,valuer);
+CREATE INDEX idx_eurusd_thursday_valuel ON eurusd_thursday(valuel,valuer);
+CREATE INDEX idx_eurusd_friday_valuel ON eurusd_friday(valuel,valuer);
+
+CREATE INDEX idx_gbpusd_monday_valuel ON gbpusd_monday(valuel,valuer);
+CREATE INDEX idx_gbpusd_tuesday_valuel ON gbpusd_tuesday(valuel,valuer);
+CREATE INDEX idx_gbpusd_wednesday_valuel ON gbpusd_wednesday(valuel,valuer);
+CREATE INDEX idx_gbpusd_thursday_valuel ON gbpusd_thursday(valuel,valuer);
+CREATE INDEX idx_gbpusd_friday_valuel ON gbpusd_friday(valuel,valuer);
+
+CREATE INDEX idx_usdcad_monday_valuel ON usdcad_monday(valuel,valuer);
+CREATE INDEX idx_usdcad_tuesday_valuel ON usdcad_tuesday(valuel,valuer);
+CREATE INDEX idx_usdcad_wednesday_valuel ON usdcad_wednesday(valuel,valuer);
+CREATE INDEX idx_usdcad_thursday_valuel ON usdcad_thursday(valuel,valuer);
+CREATE INDEX idx_usdcad_friday_valuel ON usdcad_friday(valuel,valuer);
+
+CREATE INDEX idx_usdchf_monday_valuel ON usdchf_monday(valuel,valuer);
+CREATE INDEX idx_usdchf_tuesday_valuel ON usdchf_tuesday(valuel,valuer);
+CREATE INDEX idx_usdchf_wednesday_valuel ON usdchf_wednesday(valuel,valuer);
+CREATE INDEX idx_usdchf_thursday_valuel ON usdchf_thursday(valuel,valuer);
+CREATE INDEX idx_usdchf_friday_valuel ON usdchf_friday(valuel,valuer);
+
+CREATE INDEX idx_usddkk_monday_valuel ON usddkk_monday(valuel,valuer);
+CREATE INDEX idx_usddkk_tuesday_valuel ON usddkk_tuesday(valuel,valuer);
+CREATE INDEX idx_usddkk_wednesday_valuel ON usddkk_wednesday(valuel,valuer);
+CREATE INDEX idx_usddkk_thursday_valuel ON usddkk_thursday(valuel,valuer);
+CREATE INDEX idx_usddkk_friday_valuel ON usddkk_friday(valuel,valuer);
+
+CREATE INDEX idx_xadusd_monday_valuel ON xauusd_monday(valuel,valuer);
+CREATE INDEX idx_xadusd_tuesday_valuel ON xauusd_tuesday(valuel,valuer);
+CREATE INDEX idx_xadusd_wednesday_valuel ON xauusd_wednesday(valuel,valuer);
+CREATE INDEX idx_xadusd_thursday_valuel ON xauusd_thursday(valuel,valuer);
+CREATE INDEX idx_xadusd_friday_valuel ON xauusd_friday(valuel,valuer);

@@ -56,7 +56,7 @@ def csvwrite(writer, results):
     writer.writerow(results)
 
 def getCurrentValFromCloud(destdir, filename, productInfo):
-    url = os.getenv('CLOUD_FILE_PATH')
+    url = os.getenv('CLOUD_FILE_PATH')+'actual.csv'
     download_status = download(url, destdir, filename)
     if(download_status):
         filename = destdir+filename

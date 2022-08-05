@@ -3,3 +3,5 @@ keys.json
 csv/
 result.txt
 aishetrade/*
+current_data/*
+lib/__pycache__/
