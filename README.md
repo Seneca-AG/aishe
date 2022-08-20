@@ -17,6 +17,7 @@ AISHE is an artificial intelligence system for private use. An independent tradi
 * Graphics card: Graphics hardware acceleration (optional)
 * With installed Windows update 2919355 , MS-Office 2016 / 2019, Google Drive and time zone is on UTC+1 and language packages English and German.
 
+-------------
 
 python3 -m venv aishtrade
 source aishtrade/bin/activate
@@ -29,5 +30,9 @@ pip3 install xlrd
 pip install requests
 pip install psycopg2
 pip install psycopg2-binary
+
+-------------
+
+
 
 
