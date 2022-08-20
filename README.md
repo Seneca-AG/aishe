@@ -33,6 +33,13 @@ pip install psycopg2-binary
 
 -------------
 
+<p align="center">
+  <img src="https://aishe.webgo.cc/Aishe_Highway_State_Chart.gif" alt="AISHE Highway Client" width="90%" />
+</p>
 
+* Visit a Live Sample 1 Forecast Desk at [https://www.youtube.com/watch?v=Xv3PfbLaG0A](https://www.youtube.com/watch?v=Xv3PfbLaG0A).
+* Visit a Live Sample 2 Forecast Desk at [https://www.youtube.com/watch?v=5skCi4FdkB0](https://www.youtube.com/watch?v=5skCi4FdkB0).
+
+-------------
 
 
