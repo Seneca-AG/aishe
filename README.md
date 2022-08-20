@@ -17,7 +17,15 @@ AISHE is an artificial intelligence system for private use. An independent tradi
 * Graphics card: Graphics hardware acceleration (optional)
 * With installed Windows update 2919355 , MS-Office 2016 / 2019, Google Drive and time zone is on UTC+1 and language packages English and German.
 
+## Communication
+
+Please join our mailing list to discuss questions regarding the project: https://groups.google.com/g/artificial-intelligence-system
+
 -------------
+
+**Note :** If you want to contribute, first fork the original repository and clone the forked repository into your local machine followed by ```cd``` into the directory
+
+## Local Installation Development
 
 python3 -m venv aishtrade
 source aishtrade/bin/activate
@@ -33,6 +41,7 @@ pip install psycopg2-binary
 
 -------------
 
+### Samples:
 <p align="center">
   <img src="https://aishe.webgo.cc/Aishe_Highway_State_Chart.gif" alt="AISHE Highway Client" width="90%" />
 </p>
@@ -42,4 +51,6 @@ pip install psycopg2-binary
 
 -------------
 
-
+## Installation Windows Client for practice and use 
+* ... you need the AISHE "Assistent.exe" for Windows MS-Office.
+* ... see Requirements
