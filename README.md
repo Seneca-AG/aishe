@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://aishe.webgo.cc/Aishe-Logo.svg" alt="logo" width="35%" />
+  <img src="https://aishe.webgo.cc/Aishe-Logo.png" alt="logo" width="50%" />
 </p>
 <h1 align="center">AISHE Artificial Intelligence System Home Edition (Client Application)</h1>
 
