@@ -2,7 +2,7 @@
   <img src="https://aishe.webgo.cc/Aishe-Logo.png" alt="logo" width="50%" />
 </p>
 
-# AISHE Artificial Intelligence System Home Edition (Client Application)
+# AISHE Artificial Intelligence System Home Edition (Client API for AISHE)
 
 AISHE is an artificial intelligence system for private use. It is an independent trading client that can detect and combine neural states at any broker of your choice. Through reflection skills, it can generate experience databases to trade independently. The purpose of AISHE is to use the skills of an artificial companion in daily stock market trading. The AISHE client is designed for Windows 10/11 with MS Office and Google Cloud as a frontend client.
 
@@ -55,8 +55,8 @@ To install and develop AISHE locally, follow these steps:
 
 Check out these live forecast desk samples:
 
-* [Sample 1 Forecast Desk](https://www.youtube.com/watch?v=Xv3PfbLaG0A)
-* [Sample 2 Forecast Desk](https://www.youtube.com/watch?v=5skCi4FdkB0)
+* [Sample Forecast Desk](https://www.youtube.com/watch?v=Xv3PfbLaG0A)
+* [AISHE blog site](https://www.aishe24.com)
 
 ## Installation of Windows Client for practice and use 
 
